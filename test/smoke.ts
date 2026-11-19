@@ -37,6 +37,19 @@ const dom: DomCollection = {
   fromCache: false,
   wordCount: 450,
   vitals: emptyVitals(),
+  tech: {
+    scripts: [],
+    scriptIds: [],
+    links: [],
+    linkIds: [],
+    metas: {},
+    generators: [],
+    headHtml: '',
+    htmlClass: '',
+    bodyClass: '',
+    cookies: '',
+    markers: [],
+  },
 };
 
 const http: HttpRecord = {

@@ -28,9 +28,9 @@ function Common({ report }: { report: PageReport }) {
       <Field label="html lang" value={meta.lang} />
       <Field label="content type" value={http.contentType} />
       <Field label="canonical" value={meta.canonical} mono copy />
-      <Field label="head title" value={meta.title} count={meta.titleLength} over={titleOver} />
-      <Field label="description" value={meta.description} count={meta.descriptionLength} over={descOver} />
-      <Field label="robots" value={meta.robots} />
+      <Field label="head title" value={meta.title} count={meta.titleLength} over={titleOver} copy />
+      <Field label="description" value={meta.description} count={meta.descriptionLength} over={descOver} copy />
+      <Field label="robots" value={meta.robots} copy />
       <Field label="viewport" value={meta.viewport} />
       <Field label="charset" value={meta.charset} />
       {meta.hreflang.length > 0 && <Field label="hreflang" value={`${meta.hreflang.length} alternate${meta.hreflang.length > 1 ? 's' : ''}`} />}

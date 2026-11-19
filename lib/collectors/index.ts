@@ -5,6 +5,7 @@ import { collectImages } from './images';
 import { collectLinks } from './links';
 import { collectSchema } from './schema';
 import { collectSocial } from './social';
+import { collectTech } from './tech';
 import { emptyVitals } from './vitals';
 
 export function collectPage(doc: Document, loc: Location, vitals: Vitals = emptyVitals()): DomCollection {
@@ -24,6 +25,7 @@ export function collectPage(doc: Document, loc: Location, vitals: Vitals = empty
     fromCache: nav.fromCache,
     wordCount: collectWordCount(doc),
     vitals,
+    tech: collectTech(doc),
   };
 }
 

@@ -15,6 +15,7 @@ const PAGE_HTML = `<!doctype html>
   <link rel="canonical" href="http://localhost:${PORT}/final">
   <meta property="og:title" content="OG Title">
   <meta property="og:image" content="http://localhost:${PORT}/img.png">
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"Acme"}</script>
 </head>
 <body>
@@ -148,6 +149,11 @@ const assert = (name, ok) => {
   );
   check('CLS rated', dom && ['good', 'needs-improvement', 'poor'].includes(dom.vitals.cls.rating));
   check('TTFB is numeric', dom && typeof dom.vitals.ttfb.value === 'number');
+
+  console.log('\n[technology signals]');
+  check('tech signals collected', dom && dom.tech && Array.isArray(dom.tech.scripts));
+  check('tech captured a script src', dom && dom.tech.scripts.some((s) => /jquery/.test(s)));
+  check('tech captured head markup', dom && /og:image/.test(dom.tech.headHtml));
 
   // ── Phase 2: source snapshot, robots.txt, broken-link checker ──
   // Driven from a real extension page (chrome-extension://…/sidepanel.html),

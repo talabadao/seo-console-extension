@@ -112,6 +112,7 @@ export interface DomCollection {
   fromCache: boolean;
   wordCount: number;
   vitals: Vitals;
+  tech: import('./tech/types').TechSignals;
 }
 
 /** HTTP-side payload captured by the background service worker via webRequest. */
@@ -174,6 +175,7 @@ export interface PageReport {
   social: SocialData;
   wordCount: number;
   vitals: Vitals;
+  technologies: import('./tech/types').DetectedTech[];
   issues: Issue[];
   counts: Record<Severity, number>;
   score: number;

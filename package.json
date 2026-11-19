@@ -2,7 +2,7 @@
   "name": "seo-console",
   "description": "On-page SEO inspector Chrome extension: status codes, meta tags, headings, images, links.",
   "private": true,
-  "version": "1.1.0",
+  "version": "1.2.0",
   "type": "module",
   "scripts": {
     "dev": "wxt",
@@ -11,9 +11,10 @@
     "build:firefox": "wxt build -b firefox",
     "zip": "wxt zip",
     "compile": "tsc --noEmit",
-    "test": "npm run test:unit && npm run test:audit && npm run build && npm run test:e2e",
+    "test": "npm run test:unit && npm run test:audit && npm run test:tech && npm run build && npm run test:e2e",
     "test:unit": "esbuild test/smoke.ts --bundle --platform=node --format=esm | node --input-type=module",
     "test:audit": "esbuild test/audit.ts --bundle --platform=node --format=esm | node --input-type=module",
+    "test:tech": "esbuild test/tech.ts --bundle --platform=node --format=esm | node --input-type=module",
     "test:e2e": "node test/e2e.cjs",
     "postinstall": "wxt prepare"
   },

@@ -6,13 +6,14 @@ import Summary from './components/Summary';
 import Audit from './components/Audit';
 import SettingsPanel from './components/Settings';
 import { ToolsPanel } from './components/Tools';
+import { TechPanel } from './components/Tech';
 import { HeadingsPanel, ImagesPanel, LinksPanel, SchemaPanel, SocialPanel } from './components/Panels';
 import { download, issuesToCsv, linksToCsv, reportToJson, slugForFile } from '@/lib/export';
 import { MSG } from '@/lib/messaging';
 import { loadSettings, saveSettings, type Settings } from '@/lib/settings';
 import type { AuditResult } from '@/lib/audit/types';
 
-type TabId = 'summary' | 'audit' | 'tools' | 'headings' | 'images' | 'links' | 'social' | 'schema';
+type TabId = 'summary' | 'audit' | 'tools' | 'tech' | 'headings' | 'images' | 'links' | 'social' | 'schema';
 type AuditState = { for: number; data: AuditResult | null; loading: boolean };
 type Theme = 'system' | 'light' | 'dark';
 
@@ -270,6 +271,7 @@ const TABS: { id: TabId; label: string; count?: (r: PageReport) => number }[] = 
   { id: 'summary', label: 'Summary' },
   { id: 'audit', label: 'Audit' },
   { id: 'tools', label: 'Tools' },
+  { id: 'tech', label: 'Tech', count: (r) => r.technologies.length },
   { id: 'headings', label: 'Headings', count: (r) => r.headings.length },
   { id: 'images', label: 'Images', count: (r) => r.images.length },
   { id: 'links', label: 'Links', count: (r) => r.links.total },
@@ -320,6 +322,8 @@ function TabContent({
       return <Audit audit={audit.data} loading={audit.loading} />;
     case 'tools':
       return <ToolsPanel report={report} tabId={tabId} />;
+    case 'tech':
+      return <TechPanel report={report} />;
     case 'headings':
       return <HeadingsPanel report={report} />;
     case 'images':

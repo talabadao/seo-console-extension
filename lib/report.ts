@@ -8,6 +8,7 @@ import type {
 } from './types';
 import { pixelWidth, TITLE_FONT, DESC_FONT } from './pixel-width';
 import { runRules, tally, computeScore } from './rules';
+import { detectTech } from './tech/detect';
 
 export function buildReport(dom: DomCollection, http: HttpRecord | null): PageReport {
   const meta = buildMeta(dom);
@@ -27,6 +28,7 @@ export function buildReport(dom: DomCollection, http: HttpRecord | null): PageRe
     social: dom.social,
     wordCount: dom.wordCount,
     vitals: dom.vitals,
+    technologies: detectTech(dom.tech, httpView.headers),
     issues: [],
     counts: { error: 0, warning: 0, info: 0, pass: 0 },
     score: 100,

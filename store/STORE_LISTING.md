@@ -1,6 +1,6 @@
 # Chrome Web Store — submission pack
 
-Upload file: **`.output/seo-console-1.1.0-chrome.zip`**
+Upload file: **`.output/seo-console-1.2.0-chrome.zip`**
 
 Submit at https://chrome.google.com/webstore/devconsole (one-time $5 developer fee).
 

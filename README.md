@@ -39,15 +39,17 @@ Built with **WXT + React + TypeScript + Tailwind CSS v4**, styled with the
 | **Settings** *(Phase 3)* | Adjustable rule thresholds (title/description pixel budgets, large-image size), saved to `chrome.storage.local`; the page re-scores on save. |
 | **Page tools** *(v1.1)* | A Tools tab: toggle **Disable JavaScript** for the site (via `chrome.contentSettings`, reloads the page so you see it as a crawler does) and **Outline headings** (a colour-coded, labelled border on every H1–H6). |
 | **Image previews** *(v1.1)* | The Images tab shows an inline thumbnail and the full URL (with copy) of every image. |
+| **Technology detection** *(v1.2)* | A Tech tab that fingerprints the page's stack (CMS, frameworks, JS libraries, analytics, ads, CDN, server, WordPress plugins…) from script/link URLs, response headers and markup — grouped by category with versions. |
+| **Summary copy + sized headings** *(v1.2)* | Copy buttons on canonical/title/description/robots; the Headings outline sizes text by level (H1 largest → H6 smallest). |
 
 The Summary leads with a COMMON overview (doctype, lang, content type, canonical,
 title/description with character counts, robots…) and a visual redirect trace with
 copy buttons. The Audit tab holds indexability/robots/source-diff; the Tools tab
 holds the page toggles:
 
-| Audit | Settings | Tools |
+| Tech | Audit | Tools |
 |---|---|---|
-| ![Audit](docs/ui-audit.png) | ![Settings](docs/ui-settings.png) | ![Tools](docs/ui-tools.png) |
+| ![Tech](docs/ui-tech.png) | ![Audit](docs/ui-audit.png) | ![Tools](docs/ui-tools.png) |
 
 The extension auto-re-analyzes when you switch tabs or a page finishes loading.
 
@@ -128,6 +130,8 @@ lib/
   vitals.ts             Core Web Vitals thresholds + ratings (pure).
   settings.ts           User rule thresholds (storage-backed singleton).
   collectors/outline.ts Injects the outline-headings overlay (Tools tab).
+  tech/                 v1.2: rules.ts (fingerprint table), detect.ts (engine),
+                        types.ts — technology detection.
   report.ts             Merges DOM + HTTP, computes pixel widths, runs rules, scores.
   pixel-width.ts        Canvas-based SERP pixel measurement.
   export.ts             JSON / CSV serializers.
@@ -153,14 +157,15 @@ The project ships with check scripts (in `test/`):
 npm run test:unit    # rules engine + report assembler against a synthetic page
 npm run test:audit   # robots.txt matching, link classification, source diff,
                      # indexability, Core Web Vitals ratings
+npm run test:tech    # technology detection (scripts/headers/markup, versions, dedupe)
 npm run test:e2e     # loads the built extension in Chromium (Playwright) and drives the
                      # live pipeline: webRequest, content collectors, Core Web Vitals,
                      # source fetch, robots.txt, broken-link checker, SPA detection,
-                     # and the outline-headings toggle
-npm test             # unit + audit + build + e2e, in sequence
+                     # outline-headings toggle and technology signals
+npm test             # unit + audit + tech + build + e2e, in sequence
 ```
 
-Current coverage: **15** unit, **32** audit, **36** e2e checks.
+Current coverage: **15** unit, **32** audit, **22** tech, **39** e2e checks.
 
 > The e2e test launches the **full** Chromium build (`channel: 'chromium'`) —
 > Playwright's headless shell can't load extensions. Install it once with
@@ -208,6 +213,8 @@ grant).
 - **Phase 4 — done:** multi-page crawl with aggregated reporting (removed in v1.1 as unnecessary).
 - **v1.1 — done:** COMMON overview Summary, visual redirect trace with copy buttons,
   image thumbnails, Tools tab (Disable JavaScript, Outline headings).
+- **v1.2 — done:** Technology detection tab (Wappalyzer-style), copy buttons on more
+  Summary fields, size-by-level heading outline.
 - **Deferred (pre-publish):** optional host-permission flow — moving `<all_urls>`
   to `optional_host_permissions` with dynamic content-script registration and an
   `activeTab` fallback. It trades the frictionless multi-tab UX for a smaller

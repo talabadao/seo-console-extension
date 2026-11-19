@@ -5,6 +5,9 @@ import { onLinkEvents, startLinkCheck } from '../analyze';
 import { Badge, cn, CopyButton, Empty, focusRing, LocateButton, SectionTitle, Stat } from './ui';
 import { ProbeBadge } from './Audit';
 
+// Decreasing text size per heading level, for a readable visual hierarchy.
+const HEADING_SIZE: Record<number, number> = { 1: 16, 2: 14.5, 3: 13.5, 4: 12.5, 5: 11.5, 6: 11 };
+
 // ---------------------------------------------------------------- Headings ---
 export function HeadingsPanel({ report }: { report: PageReport }) {
   const { headings } = report;
@@ -31,7 +34,10 @@ export function HeadingsPanel({ report }: { report: PageReport }) {
             >
               H{h.level}
             </span>
-            <span className="min-w-0 flex-1 truncate text-[12.5px] text-body">
+            <span
+              className={cn('min-w-0 flex-1 truncate', h.level <= 2 ? 'font-semibold text-fg' : 'text-body')}
+              style={{ fontSize: HEADING_SIZE[h.level] }}
+            >
               {h.text || <span className="text-warning">(empty)</span>}
             </span>
             <LocateButton selector={h.selector} />
