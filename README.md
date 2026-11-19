@@ -39,7 +39,7 @@ Built with **WXT + React + TypeScript + Tailwind CSS v4**, styled with the
 | **Settings** *(Phase 3)* | Adjustable rule thresholds (title/description pixel budgets, large-image size), saved to `chrome.storage.local`; the page re-scores on save. |
 | **Page tools** *(v1.1)* | A Tools tab: toggle **Disable JavaScript** for the site (via `chrome.contentSettings`, reloads the page so you see it as a crawler does) and **Outline headings** (a colour-coded, labelled border on every H1–H6). |
 | **Image previews** *(v1.1)* | The Images tab shows an inline thumbnail and the full URL (with copy) of every image. |
-| **Technology detection** *(v1.2)* | A Tech tab that fingerprints the page's stack (CMS, frameworks, JS libraries, analytics, ads, CDN, server, WordPress plugins…) from script/link URLs, response headers and markup — grouped by category with versions. |
+| **Technology detection** *(v1.2)* | A Tech tab that fingerprints the page's stack (CMS, frameworks, JS libraries, analytics, ads, CDN, server, WordPress plugins…) from script/link URLs, response headers and markup — grouped by category with versions and bundled brand logos ([Simple Icons](https://simpleicons.org), CC0; no external requests). |
 | **Summary copy + sized headings** *(v1.2)* | Copy buttons on canonical/title/description/robots; the Headings outline sizes text by level (H1 largest → H6 smallest). |
 
 The Summary leads with a COMMON overview (doctype, lang, content type, canonical,

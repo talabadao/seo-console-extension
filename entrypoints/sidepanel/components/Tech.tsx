@@ -2,6 +2,7 @@ import React from 'react';
 import type { PageReport } from '@/lib/types';
 import type { DetectedTech, TechCategory } from '@/lib/tech/types';
 import { CATEGORY_ORDER } from '@/lib/tech/types';
+import { TECH_ICONS } from '@/lib/tech/icons';
 import { Badge, Empty, SectionTitle } from './ui';
 
 export function TechPanel({ report }: { report: PageReport }) {
@@ -30,9 +31,7 @@ export function TechPanel({ report }: { report: PageReport }) {
           <ul className="space-y-1">
             {byCat.get(cat)!.map((t, i) => (
               <li key={i} className="flex items-center gap-2.5 rounded-lg border border-hairline bg-card px-2.5 py-2">
-                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-hover text-[12px] font-bold text-accent">
-                  {t.name.charAt(0).toUpperCase()}
-                </span>
+                <TechIcon name={t.name} />
                 <span className="min-w-0 flex-1 truncate text-[12.5px] font-medium text-fg">{t.name}</span>
                 {t.version && <Badge tone="neutral">{t.version}</Badge>}
               </li>
@@ -41,5 +40,26 @@ export function TechPanel({ report }: { report: PageReport }) {
         </section>
       ))}
     </div>
+  );
+}
+
+/** Brand logo (bundled from the CC0 Simple Icons set) for a detected technology,
+ * shown on a light tile so coloured and near-black marks read in both themes.
+ * Falls back to a letter badge when no logo is available. */
+function TechIcon({ name }: { name: string }) {
+  const ic = TECH_ICONS[name];
+  if (ic) {
+    return (
+      <span className="flex h-7 w-7 shrink-0 items-center justify-center overflow-hidden rounded-md border border-hairline bg-white">
+        <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
+          <path fill={`#${ic.hex}`} d={ic.path} />
+        </svg>
+      </span>
+    );
+  }
+  return (
+    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-hover text-[12px] font-bold text-accent">
+      {name.charAt(0).toUpperCase()}
+    </span>
   );
 }
