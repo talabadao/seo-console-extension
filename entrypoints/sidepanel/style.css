@@ -1,0 +1,199 @@
+@import 'tailwindcss';
+
+/* ── Euclid Circular A (self-hosted, brand typeface) ─────────────────────── */
+@font-face {
+  font-family: 'Euclid Circular A';
+  src: url('/fonts/EuclidCircularA-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Euclid Circular A';
+  src: url('/fonts/EuclidCircularA-Medium.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Euclid Circular A';
+  src: url('/fonts/EuclidCircularA-SemiBold.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Euclid Circular A';
+  src: url('/fonts/EuclidCircularA-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ── Brand tokens (SEO Console design system) ────────────────────────────
+   Light-first; color is for data and state, never chrome. Ink is the one
+   primary action per view. Light and dark both work: dark via prefers-color
+   or [data-theme="dark"]; [data-theme="light"] forces light. */
+:root {
+  --brand-canvas: #f8f9fa;
+  --brand-card: #ffffff;
+  --brand-elevated: #ffffff;
+  --brand-ink: #111111;
+  --brand-ink-pressed: #242424;
+  --brand-on-ink: #ffffff;
+  --brand-text: #111111;
+  --brand-text-body: #374151;
+  --brand-text-muted: #6b7280;
+  --brand-text-muted-soft: #898989;
+  --brand-hairline: #e5e7eb;
+  --brand-hairline-soft: #f3f4f6;
+  --brand-hover: #f3f4f6;
+  --brand-selected: #eef2ff;
+  --brand-accent: #3b82f6;
+  --brand-focus-ring: #3b82f6;
+
+  --sev-error: #dc2626;
+  --sev-error-soft: #fef2f2;
+  --sev-warning: #b45309;
+  --sev-warning-soft: #fffbeb;
+  --sev-info: #2563eb;
+  --sev-info-soft: #eff6ff;
+  --sev-success: #15803d;
+  --sev-success-soft: #f0fdf4;
+
+  --serp-title: #1a0dab;
+  --serp-url: #006621;
+
+  --font-brand: 'Euclid Circular A', ui-sans-serif, system-ui, -apple-system,
+    'Segoe UI', Roboto, sans-serif;
+  --font-mono-brand: ui-monospace, SFMono-Regular, 'JetBrains Mono', Menlo, monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --brand-canvas: #0f1115;
+    --brand-card: #16181d;
+    --brand-elevated: #1c1f26;
+    --brand-ink: #f3f4f6;
+    --brand-ink-pressed: #d1d5db;
+    --brand-on-ink: #111111;
+    --brand-text: #f3f4f6;
+    --brand-text-body: #d1d5db;
+    --brand-text-muted: #9ca3af;
+    --brand-text-muted-soft: #6b7280;
+    --brand-hairline: #2a2e35;
+    --brand-hairline-soft: #1f2329;
+    --brand-hover: #1f2329;
+    --brand-selected: #1e1f3a;
+    --brand-accent: #60a5fa;
+    --brand-focus-ring: #60a5fa;
+
+    --sev-error: #f87171;
+    --sev-error-soft: #2a1416;
+    --sev-warning: #fbbf24;
+    --sev-warning-soft: #241c0a;
+    --sev-info: #60a5fa;
+    --sev-info-soft: #0f1d33;
+    --sev-success: #4ade80;
+    --sev-success-soft: #0c2015;
+
+    --serp-title: #8ab4f8;
+    --serp-url: #5fae7f;
+  }
+}
+
+:root[data-theme='dark'] {
+  --brand-canvas: #0f1115;
+  --brand-card: #16181d;
+  --brand-elevated: #1c1f26;
+  --brand-ink: #f3f4f6;
+  --brand-ink-pressed: #d1d5db;
+  --brand-on-ink: #111111;
+  --brand-text: #f3f4f6;
+  --brand-text-body: #d1d5db;
+  --brand-text-muted: #9ca3af;
+  --brand-text-muted-soft: #6b7280;
+  --brand-hairline: #2a2e35;
+  --brand-hairline-soft: #1f2329;
+  --brand-hover: #1f2329;
+  --brand-selected: #1e1f3a;
+  --brand-accent: #60a5fa;
+  --brand-focus-ring: #60a5fa;
+
+  --sev-error: #f87171;
+  --sev-error-soft: #2a1416;
+  --sev-warning: #fbbf24;
+  --sev-warning-soft: #241c0a;
+  --sev-info: #60a5fa;
+  --sev-info-soft: #0f1d33;
+  --sev-success: #4ade80;
+  --sev-success-soft: #0c2015;
+
+  --serp-title: #8ab4f8;
+  --serp-url: #5fae7f;
+}
+
+/* ── Map brand tokens to Tailwind utilities (dynamic, theme-aware) ──────── */
+@theme inline {
+  --font-sans: var(--font-brand);
+  --font-mono: var(--font-mono-brand);
+
+  --color-canvas: var(--brand-canvas);
+  --color-card: var(--brand-card);
+  --color-elevated: var(--brand-elevated);
+  --color-ink: var(--brand-ink);
+  --color-ink-pressed: var(--brand-ink-pressed);
+  --color-on-ink: var(--brand-on-ink);
+  --color-fg: var(--brand-text);
+  --color-body: var(--brand-text-body);
+  --color-muted: var(--brand-text-muted);
+  --color-muted-soft: var(--brand-text-muted-soft);
+  --color-hairline: var(--brand-hairline);
+  --color-hairline-soft: var(--brand-hairline-soft);
+  --color-hover: var(--brand-hover);
+  --color-selected: var(--brand-selected);
+  --color-accent: var(--brand-accent);
+
+  --color-error: var(--sev-error);
+  --color-error-soft: var(--sev-error-soft);
+  --color-warning: var(--sev-warning);
+  --color-warning-soft: var(--sev-warning-soft);
+  --color-info: var(--sev-info);
+  --color-info-soft: var(--sev-info-soft);
+  --color-success: var(--sev-success);
+  --color-success-soft: var(--sev-success-soft);
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--brand-canvas);
+  color: var(--brand-text);
+  font-family: var(--font-brand);
+  font-size: 13px;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+.tnum {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Thin, quiet scrollbars */
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+*::-webkit-scrollbar-thumb {
+  background: var(--brand-hairline);
+  border-radius: 9999px;
+  border: 2px solid var(--brand-canvas);
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--brand-text-muted-soft);
+}
