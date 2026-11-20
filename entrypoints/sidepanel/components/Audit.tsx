@@ -1,6 +1,6 @@
 import React from 'react';
 import type { AuditResult, DiffRow, ProbeState } from '@/lib/audit/types';
-import { Badge, cn, Empty, SectionTitle, SeverityIcon, truncate } from './ui';
+import { Badge, cn, CopyButton, Empty, SectionTitle, SeverityIcon } from './ui';
 
 export default function Audit({ audit, loading }: { audit: AuditResult | null; loading: boolean }) {
   if (loading && !audit) {
@@ -34,10 +34,10 @@ function Indexability({ audit }: { audit: AuditResult }) {
       </div>
       <div className="mt-3 space-y-1.5">
         {indexability.signals.map((s, i) => (
-          <div key={i} className="flex items-center gap-2 text-[12px]">
-            <SeverityIcon severity={s.blocked ? 'error' : 'pass'} className="opacity-90" />
+          <div key={i} className="flex items-start gap-2 text-[12px]">
+            <SeverityIcon severity={s.blocked ? 'error' : 'pass'} className="mt-0.5 opacity-90" />
             <span className="w-24 shrink-0 text-muted">{s.source}</span>
-            <span className={cn('min-w-0 flex-1 truncate', s.blocked ? 'text-error' : 'text-body')}>{s.label}</span>
+            <span className={cn('min-w-0 flex-1 break-words', s.blocked ? 'text-error' : 'text-body')}>{s.label}</span>
           </div>
         ))}
       </div>
@@ -74,7 +74,10 @@ function RobotsCard({ audit }: { audit: AuditResult }) {
         </Row>
         {robots.matchedRule && (
           <Row label="Rule">
-            <span className="font-mono text-[11px] text-body">{robots.matchedRule}</span>
+            <span className="flex items-start gap-1">
+              <span className="min-w-0 flex-1 break-all font-mono text-[11px] text-body">{robots.matchedRule}</span>
+              <CopyButton value={robots.matchedRule} />
+            </span>
           </Row>
         )}
         {robots.appliedGroup && (
@@ -94,9 +97,10 @@ function Sitemaps({ audit }: { audit: AuditResult }) {
       <SectionTitle>Sitemaps</SectionTitle>
       <ul className="space-y-1">
         {audit.sitemaps.map((s, i) => (
-          <li key={i} className="flex items-center gap-2 rounded-lg border border-hairline bg-card px-2 py-1.5 text-[12px]">
+          <li key={i} className="flex items-start gap-2 rounded-lg border border-hairline bg-card px-2 py-1.5 text-[12px]">
             <ProbeBadge state={s.state} status={s.status} />
-            <span className="min-w-0 flex-1 truncate font-mono text-[11px] text-body">{s.url}</span>
+            <span className="min-w-0 flex-1 break-all font-mono text-[11px] text-body">{s.url}</span>
+            <CopyButton value={s.url} />
           </li>
         ))}
       </ul>
@@ -141,27 +145,28 @@ function RenderDiff({ audit }: { audit: AuditResult }) {
 function DiffRowView({ row }: { row: DiffRow }) {
   const same = row.status === 'same';
   return (
-    <li className="px-2.5 py-1.5">
-      <div className="flex items-center gap-2">
-        <span className="w-24 shrink-0 text-[12px] text-muted">{row.field}</span>
+    <li className="px-2.5 py-2">
+      <div className="flex items-start gap-2">
+        <span className="w-20 shrink-0 pt-0.5 text-[12px] text-muted">{row.field}</span>
         {same ? (
-          <span className="flex min-w-0 flex-1 items-center gap-1.5">
-            <SeverityIcon severity="pass" className="opacity-70" />
-            <span className="min-w-0 flex-1 truncate text-[12px] text-body">{truncate(row.rendered, 48)}</span>
+          <span className="flex min-w-0 flex-1 items-start gap-1.5">
+            <SeverityIcon severity="pass" className="mt-0.5 opacity-70" />
+            <span className="min-w-0 flex-1 break-words text-[12px] text-body">{row.rendered}</span>
+            {row.rendered !== '—' && <CopyButton value={row.rendered} />}
           </span>
         ) : (
           <div className="min-w-0 flex-1">
-            <div className="flex items-center gap-1.5">
-              {row.risk ? <Badge tone="error">JS-only</Badge> : <Badge tone="warning">{statusLabel(row.status)}</Badge>}
-            </div>
-            <div className="mt-1 space-y-0.5 text-[11.5px]">
-              <div className="flex gap-1.5">
+            <div>{row.risk ? <Badge tone="error">JS-only</Badge> : <Badge tone="warning">{statusLabel(row.status)}</Badge>}</div>
+            <div className="mt-1 space-y-1 text-[11.5px]">
+              <div className="flex items-start gap-1.5">
                 <span className="w-16 shrink-0 text-muted-soft">rendered</span>
-                <span className="min-w-0 flex-1 truncate text-fg">{truncate(row.rendered, 46)}</span>
+                <span className="min-w-0 flex-1 break-words text-fg">{row.rendered}</span>
+                {row.rendered !== '—' && <CopyButton value={row.rendered} />}
               </div>
-              <div className="flex gap-1.5">
+              <div className="flex items-start gap-1.5">
                 <span className="w-16 shrink-0 text-muted-soft">source</span>
-                <span className="min-w-0 flex-1 truncate text-body">{truncate(row.source, 46)}</span>
+                <span className="min-w-0 flex-1 break-words text-body">{row.source}</span>
+                {row.source !== '—' && <CopyButton value={row.source} />}
               </div>
             </div>
           </div>

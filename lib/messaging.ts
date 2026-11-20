@@ -13,8 +13,10 @@ export const MSG = {
   LINK_RESULT: 'seo-console/link-result',
   LINK_DONE: 'seo-console/link-done',
   URL_CHANGED: 'seo-console/url-changed',
-  // v1.1 — page tools
+  // page tools
   OUTLINE_HEADINGS: 'seo-console/outline-headings',
+  OUTLINE_LINKS: 'seo-console/outline-links',
+  RULER: 'seo-console/ruler',
 } as const;
 
 export type CollectDomRequest = { type: typeof MSG.COLLECT_DOM };
@@ -42,3 +44,5 @@ export type LinkResultMessage = { type: typeof MSG.LINK_RESULT; tabId: number } 
 export type LinkDoneMessage = { type: typeof MSG.LINK_DONE; tabId: number };
 
 export type OutlineHeadingsRequest = { type: typeof MSG.OUTLINE_HEADINGS; on: boolean };
+export type OutlineLinksRequest = { type: typeof MSG.OUTLINE_LINKS; on: boolean };
+export type RulerRequest = { type: typeof MSG.RULER; on: boolean };

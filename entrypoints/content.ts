@@ -4,7 +4,8 @@ import { collectPage } from '@/lib/collectors';
 import { collectSourceFromHtml } from '@/lib/collectors/source';
 import { createVitalsCollector } from '@/lib/collectors/vitals';
 import { highlight, clearHighlight } from '@/lib/collectors/highlight';
-import { setOutlineHeadings } from '@/lib/collectors/outline';
+import { setOutlineHeadings, setOutlineLinks } from '@/lib/collectors/outline';
+import { setRuler } from '@/lib/collectors/ruler';
 import type { SourceSnapshot } from '@/lib/audit/types';
 
 export default defineContentScript({
@@ -36,6 +37,14 @@ export default defineContentScript({
             return true; // async
           case MSG.OUTLINE_HEADINGS:
             setOutlineHeadings(!!msg.on);
+            sendResponse(true);
+            return false;
+          case MSG.OUTLINE_LINKS:
+            setOutlineLinks(!!msg.on);
+            sendResponse(true);
+            return false;
+          case MSG.RULER:
+            setRuler(!!msg.on);
             sendResponse(true);
             return false;
         }

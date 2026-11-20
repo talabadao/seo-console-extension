@@ -238,6 +238,23 @@ const assert = (name, ok) => {
   const outlineOff = await page.evaluate(() => !document.getElementById('seo-console-outline-headings'));
   check('outline headings removed', outlineOff === true);
 
+  const toggle = async (type, on) =>
+    ext.evaluate(({ tabId, type, on }) => chrome.tabs.sendMessage(tabId, { type, on }), { tabId: result.tabId, type, on });
+
+  await toggle('seo-console/outline-links', true);
+  await page.waitForTimeout(250);
+  check('outline links injected', await page.evaluate(() => !!document.getElementById('seo-console-outline-links')));
+  await toggle('seo-console/outline-links', false);
+  await page.waitForTimeout(250);
+  check('outline links removed', await page.evaluate(() => !document.getElementById('seo-console-outline-links')));
+
+  await toggle('seo-console/ruler', true);
+  await page.waitForTimeout(250);
+  check('ruler shown', await page.evaluate(() => !!document.getElementById('seo-console-ruler')));
+  await toggle('seo-console/ruler', false);
+  await page.waitForTimeout(250);
+  check('ruler removed', await page.evaluate(() => !document.getElementById('seo-console-ruler')));
+
   console.log(`\n${pass}/${total} checks passed`);
 
   await context.close();

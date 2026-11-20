@@ -4,13 +4,11 @@ import { analyzeActiveTab, clearHighlightInTab, highlightInTab, runAudit, type A
 import { HighlightContext, IconButton, cn, focusRing } from './components/ui';
 import Summary from './components/Summary';
 import Audit from './components/Audit';
-import SettingsPanel from './components/Settings';
 import { ToolsPanel } from './components/Tools';
 import { TechPanel } from './components/Tech';
 import { HeadingsPanel, ImagesPanel, LinksPanel, SchemaPanel, SocialPanel } from './components/Panels';
-import { download, issuesToCsv, linksToCsv, reportToJson, slugForFile } from '@/lib/export';
 import { MSG } from '@/lib/messaging';
-import { loadSettings, saveSettings, type Settings } from '@/lib/settings';
+import { loadSettings } from '@/lib/settings';
 import type { AuditResult } from '@/lib/audit/types';
 
 type TabId = 'summary' | 'audit' | 'tools' | 'tech' | 'headings' | 'images' | 'links' | 'social' | 'schema';
@@ -44,7 +42,6 @@ export default function App() {
   const [tab, setTab] = React.useState<TabId>('summary');
   const [theme, setTheme] = useTheme();
   const [audit, setAudit] = React.useState<AuditState>({ for: -1, data: null, loading: false });
-  const [settingsOpen, setSettingsOpen] = React.useState(false);
   const tabIdRef = React.useRef<number | null>(null);
   const spaTimer = React.useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -90,13 +87,12 @@ export default function App() {
     else clearHighlightInTab(tabIdRef.current);
   }, []);
 
-  const onSaveSettings = React.useCallback(
-    async (next: Partial<Settings>) => {
-      await saveSettings(next);
-      run();
-    },
-    [run],
-  );
+  // Hard reload: clear cache for the page (like Ctrl+Shift+R). The onUpdated
+  // 'complete' listener then re-analyzes automatically.
+  const hardReload = React.useCallback(() => {
+    const id = tabIdRef.current;
+    if (id != null) chrome.tabs.reload(id, { bypassCache: true }).catch(() => {});
+  }, []);
 
   const report = state.report;
 
@@ -116,21 +112,16 @@ export default function App() {
     <HighlightContext.Provider value={highlight}>
       <div className="flex h-full flex-col bg-canvas text-fg">
         <Header
-          report={report}
           url={state.tab?.url}
           loading={loading}
-          onRefresh={run}
+          onReload={hardReload}
           theme={theme}
           onCycleTheme={() => setTheme(theme === 'system' ? 'light' : theme === 'light' ? 'dark' : 'system')}
-          settingsOpen={settingsOpen}
-          onToggleSettings={() => setSettingsOpen((v) => !v)}
         />
-        {report && !settingsOpen && <TabBar active={tab} onChange={setTab} report={report} />}
+        {report && <TabBar active={tab} onChange={setTab} report={report} />}
 
         <main className="flex-1 overflow-y-auto px-3 py-3">
-          {settingsOpen ? (
-            <SettingsPanel onClose={() => setSettingsOpen(false)} onSave={onSaveSettings} />
-          ) : loading && !report ? (
+          {loading && !report ? (
             <Loading />
           ) : state.error ? (
             <ErrorView message={state.error} onRetry={run} />
@@ -146,23 +137,17 @@ export default function App() {
 }
 
 function Header({
-  report,
   url,
   loading,
-  onRefresh,
+  onReload,
   theme,
   onCycleTheme,
-  settingsOpen,
-  onToggleSettings,
 }: {
-  report: PageReport | null;
   url?: string;
   loading: boolean;
-  onRefresh: () => void;
+  onReload: () => void;
   theme: Theme;
   onCycleTheme: () => void;
-  settingsOpen: boolean;
-  onToggleSettings: () => void;
 }) {
   return (
     <header className="border-b border-hairline bg-card">
@@ -175,15 +160,8 @@ function Header({
           <span className="text-[13px] font-semibold tracking-tight text-fg">SEO Console</span>
         </div>
         <div className="flex-1" />
-        <IconButton title="Settings" onClick={onToggleSettings} active={settingsOpen}>
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <circle cx="12" cy="12" r="3" />
-            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z" />
-          </svg>
-        </IconButton>
         <ThemeToggle theme={theme} onClick={onCycleTheme} />
-        {report && <ExportMenu report={report} />}
-        <IconButton title="Re-analyze" onClick={onRefresh}>
+        <IconButton title="Hard reload (clear cache) and re-analyze" onClick={onReload}>
           <svg
             width="15"
             height="15"
@@ -226,44 +204,6 @@ function ThemeToggle({ theme, onClick }: { theme: Theme; onClick: () => void }) 
         </svg>
       )}
     </IconButton>
-  );
-}
-
-function ExportMenu({ report }: { report: PageReport }) {
-  const [open, setOpen] = React.useState(false);
-  const slug = slugForFile(report);
-  const item = (label: string, fn: () => void) => (
-    <button
-      type="button"
-      onClick={() => {
-        fn();
-        setOpen(false);
-      }}
-      className="block w-full px-3 py-1.5 text-left text-[12px] text-body hover:bg-hover hover:text-fg"
-    >
-      {label}
-    </button>
-  );
-  return (
-    <div className="relative">
-      <IconButton title="Export" onClick={() => setOpen((v) => !v)} active={open}>
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-          <polyline points="7 10 12 15 17 10" />
-          <line x1="12" y1="15" x2="12" y2="3" />
-        </svg>
-      </IconButton>
-      {open && (
-        <>
-          <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
-          <div className="absolute right-0 z-20 mt-1 w-44 overflow-hidden rounded-lg border border-hairline bg-elevated py-1 shadow-[var(--brand-elevation-pop)]">
-            {item('Report (JSON)', () => download(`seo-${slug}.json`, reportToJson(report), 'application/json'))}
-            {item('Issues (CSV)', () => download(`seo-issues-${slug}.csv`, issuesToCsv(report), 'text/csv'))}
-            {item('Links (CSV)', () => download(`seo-links-${slug}.csv`, linksToCsv(report), 'text/csv'))}
-          </div>
-        </>
-      )}
-    </div>
   );
 }
 

@@ -22,25 +22,27 @@ export function HeadingsPanel({ report }: { report: PageReport }) {
           </Badge>
         ))}
       </div>
-      <ul className="space-y-0.5">
+      <ul className="space-y-2">
         {headings.map((h, i) => (
-          <li key={i} className="group flex items-center gap-2 rounded-md px-1 py-1 hover:bg-hover">
+          <li key={i} className="group flex items-start gap-2 rounded-md px-1 py-1 hover:bg-hover">
             <span style={{ width: (h.level - 1) * 14 }} className="shrink-0" />
             <span
               className={cn(
-                'shrink-0 rounded px-1.5 py-0.5 font-mono text-[10px] font-medium',
+                'mt-[3px] shrink-0 rounded px-1.5 py-0.5 font-mono text-[10px] font-medium',
                 h.level === 1 ? 'bg-info-soft text-accent' : 'bg-hover text-muted',
               )}
             >
               H{h.level}
             </span>
             <span
-              className={cn('min-w-0 flex-1 truncate', h.level <= 2 ? 'font-semibold text-fg' : 'text-body')}
+              className={cn('min-w-0 flex-1 break-words leading-relaxed', h.level === 1 ? 'font-medium text-fg' : 'text-body')}
               style={{ fontSize: HEADING_SIZE[h.level] }}
             >
               {h.text || <span className="text-warning">(empty)</span>}
             </span>
-            <LocateButton selector={h.selector} />
+            <span className="mt-0.5 shrink-0">
+              <LocateButton selector={h.selector} />
+            </span>
           </li>
         ))}
       </ul>
@@ -249,7 +251,12 @@ export function LinksPanel({ report, tabId }: { report: PageReport; tabId: numbe
 
 function LinkRow({ link, result }: { link: LinkInfo; result?: LinkResult }) {
   return (
-    <li className="flex items-center gap-2 rounded-lg border border-hairline bg-card px-2 py-1.5">
+    <li
+      className={cn(
+        'flex items-center gap-2 rounded-lg bg-card px-2 py-1.5',
+        link.isNofollow ? 'border border-dashed border-warning' : 'border border-solid border-hairline',
+      )}
+    >
       <Badge tone={link.isInternal ? 'accent' : 'neutral'}>{link.isInternal ? 'int' : 'ext'}</Badge>
       <div className="min-w-0 flex-1">
         <div className="truncate text-[12px] text-fg">

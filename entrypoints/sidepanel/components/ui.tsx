@@ -175,9 +175,9 @@ export function LocateButton({ selector }: { selector?: string }) {
 
 export function Stat({ label, value, tone }: { label: string; value: React.ReactNode; tone?: string }) {
   return (
-    <div className="rounded-lg border border-hairline bg-card px-3 py-2">
-      <div className="text-[11px] font-medium uppercase tracking-wide text-muted">{label}</div>
-      <div className={cn('tnum mt-0.5 text-sm font-semibold', tone || 'text-fg')}>{value}</div>
+    <div className="rounded-lg border border-hairline bg-card px-2 py-2">
+      <div className="truncate text-[9.5px] font-medium uppercase tracking-normal text-muted">{label}</div>
+      <div className={cn('tnum mt-0.5 text-[13px] font-semibold', tone || 'text-fg')}>{value}</div>
     </div>
   );
 }

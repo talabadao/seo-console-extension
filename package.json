@@ -2,7 +2,7 @@
   "name": "seo-console",
   "description": "On-page SEO inspector Chrome extension: status codes, meta tags, headings, images, links.",
   "private": true,
-  "version": "1.2.1",
+  "version": "1.3.0",
   "type": "module",
   "scripts": {
     "dev": "wxt",

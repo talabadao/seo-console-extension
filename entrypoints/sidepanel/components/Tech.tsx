@@ -58,8 +58,16 @@ function TechIcon({ name }: { name: string }) {
     );
   }
   return (
-    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-hover text-[12px] font-bold text-accent">
-      {name.charAt(0).toUpperCase()}
+    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md border border-hairline bg-white">
+      <span className="text-[12px] font-bold" style={{ color: `hsl(${hashHue(name)} 60% 42%)` }}>
+        {name.charAt(0).toUpperCase()}
+      </span>
     </span>
   );
+}
+
+function hashHue(s: string): number {
+  let h = 0;
+  for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) % 360;
+  return h;
 }

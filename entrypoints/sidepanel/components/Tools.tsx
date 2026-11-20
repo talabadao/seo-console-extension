@@ -1,35 +1,54 @@
 import React from 'react';
 import type { PageReport } from '@/lib/types';
-import { isJsBlocked, setJsBlocked, setOutlineHeadings } from '../analyze';
+import {
+  isBlocked,
+  setBlocked,
+  setOutlineHeadings,
+  setOutlineLinks,
+  setRuler,
+  type BlockSetting,
+} from '../analyze';
 import { cn, focusRing, SectionTitle } from './ui';
+
+type PageTool = 'headings' | 'links' | 'ruler';
+const PAGE_SENDERS: Record<PageTool, (tabId: number, on: boolean) => Promise<void>> = {
+  headings: setOutlineHeadings,
+  links: setOutlineLinks,
+  ruler: setRuler,
+};
 
 export function ToolsPanel({ report, tabId }: { report: PageReport; tabId: number }) {
   const url = report.url;
-  const [jsBlocked, setJsBlockedState] = React.useState(false);
-  const [outline, setOutline] = React.useState(false);
+  const [blocked, setBlockedState] = React.useState<Record<BlockSetting, boolean>>({
+    javascript: false,
+    cookies: false,
+    popups: false,
+  });
+  const [page, setPage] = React.useState<Record<PageTool, boolean>>({ headings: false, links: false, ruler: false });
   const [busy, setBusy] = React.useState(false);
 
   React.useEffect(() => {
     let active = true;
-    isJsBlocked(url).then((b) => {
-      if (active) setJsBlockedState(b);
-    });
+    Promise.all([isBlocked('javascript', url), isBlocked('cookies', url), isBlocked('popups', url)]).then(
+      ([javascript, cookies, popups]) => {
+        if (active) setBlockedState({ javascript, cookies, popups });
+      },
+    );
     return () => {
       active = false;
     };
   }, [url]);
 
-  // Outline is per-page; reset when the page changes.
+  // Page overlays reset when the page reloads.
   React.useEffect(() => {
-    setOutline(false);
+    setPage({ headings: false, links: false, ruler: false });
   }, [report.collectedAt]);
 
-  const toggleJs = async () => {
+  const toggleContent = async (s: BlockSetting) => {
     if (busy) return;
     setBusy(true);
-    const next = !jsBlocked;
-    const applied = await setJsBlocked(url, next);
-    setJsBlockedState(applied);
+    const applied = await setBlocked(s, url, !blocked[s]);
+    setBlockedState((b) => ({ ...b, [s]: applied }));
     try {
       await chrome.tabs.reload(tabId);
     } catch {
@@ -38,32 +57,60 @@ export function ToolsPanel({ report, tabId }: { report: PageReport; tabId: numbe
     setBusy(false);
   };
 
-  const toggleOutline = async () => {
-    const next = !outline;
-    setOutline(next);
-    await setOutlineHeadings(tabId, next);
+  const togglePage = async (key: PageTool) => {
+    const next = !page[key];
+    setPage((p) => ({ ...p, [key]: next }));
+    await PAGE_SENDERS[key](tabId, next);
   };
 
   return (
-    <div className="space-y-3">
-      <SectionTitle>Page tools</SectionTitle>
+    <div className="space-y-4">
+      <section className="space-y-2">
+        <SectionTitle>Content · reloads the page</SectionTitle>
+        <ToolRow
+          title="Disable JavaScript"
+          desc="Block JavaScript for this site — see the page the way crawlers do."
+          on={blocked.javascript}
+          onToggle={() => toggleContent('javascript')}
+        />
+        <ToolRow
+          title="Disable cookies"
+          desc="Stop this site from reading or setting cookies."
+          on={blocked.cookies}
+          onToggle={() => toggleContent('cookies')}
+        />
+        <ToolRow
+          title="Disable popups"
+          desc="Block pop-up windows opened by this site."
+          on={blocked.popups}
+          onToggle={() => toggleContent('popups')}
+        />
+      </section>
 
-      <ToolRow
-        title="Disable JavaScript"
-        desc="Block JavaScript for this site and reload — see the page the way crawlers do. Toggle off to allow it again."
-        on={jsBlocked}
-        onToggle={toggleJs}
-      />
-      <ToolRow
-        title="Outline headings"
-        desc="Outline every H1–H6 on the page with a colour-coded, labelled border."
-        on={outline}
-        onToggle={toggleOutline}
-      />
+      <section className="space-y-2">
+        <SectionTitle>Page overlays</SectionTitle>
+        <ToolRow
+          title="Outline headings"
+          desc="Outline every H1–H6 on the page with a colour-coded, labelled border."
+          on={page.headings}
+          onToggle={() => togglePage('headings')}
+        />
+        <ToolRow
+          title="Outline links"
+          desc="Outline links — solid border for follow, dashed for nofollow."
+          on={page.links}
+          onToggle={() => togglePage('links')}
+        />
+        <ToolRow
+          title="Display ruler"
+          desc="Crosshair guides with an x/y readout; drag to measure a box in pixels."
+          on={page.ruler}
+          onToggle={() => togglePage('ruler')}
+        />
+      </section>
 
-      <p className="px-1 pt-1 text-[11px] leading-snug text-muted-soft">
-        Disable JavaScript is a per-site setting that persists until you turn it off. Outline headings resets when the
-        page reloads.
+      <p className="px-1 text-[11px] leading-snug text-muted-soft">
+        Content toggles are per-site and persist until turned off. Page overlays reset when the page reloads.
       </p>
     </div>
   );

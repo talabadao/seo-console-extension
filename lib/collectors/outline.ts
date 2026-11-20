@@ -27,3 +27,22 @@ export function setOutlineHeadings(on: boolean): void {
   `;
   (document.head || document.documentElement).appendChild(style);
 }
+
+const LINKS_STYLE_ID = 'seo-console-outline-links';
+
+/** Outlines links: solid blue for follow, dashed amber for nofollow. */
+export function setOutlineLinks(on: boolean): void {
+  const existing = document.getElementById(LINKS_STYLE_ID);
+  if (!on) {
+    existing?.remove();
+    return;
+  }
+  if (existing) return;
+  const style = document.createElement('style');
+  style.id = LINKS_STYLE_ID;
+  style.textContent = `
+    a[href]{outline:2px solid #3b82f6!important;outline-offset:1px!important}
+    a[href][rel~="nofollow" i]{outline-style:dashed!important;outline-color:#f59e0b!important}
+  `;
+  (document.head || document.documentElement).appendChild(style);
+}

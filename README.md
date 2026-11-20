@@ -41,6 +41,8 @@ Built with **WXT + React + TypeScript + Tailwind CSS v4**, styled with the
 | **Image previews** *(v1.1)* | The Images tab shows an inline thumbnail and the full URL (with copy) of every image. |
 | **Technology detection** *(v1.2)* | A Tech tab that fingerprints the page's stack (CMS, frameworks, JS libraries, analytics, ads, CDN, server, WordPress plugins…) from script/link URLs, response headers and markup — grouped by category with versions and bundled brand logos ([Simple Icons](https://simpleicons.org), CC0; no external requests). |
 | **Summary copy + sized headings** *(v1.2)* | Copy buttons on canonical/title/description/robots; the Headings outline sizes text by level (H1 largest → H6 smallest). |
+| **More page tools** *(v1.3)* | Tools tab adds Disable cookies, Disable popups (content settings), Outline links (solid follow / dashed nofollow) and a Display ruler (crosshair + drag-to-measure). |
+| **UI polish** *(v1.3)* | Brand logos for most detected techs; Links show follow (solid) vs nofollow (dashed) borders; Headings wrap long text; Audit values wrap fully with copy buttons; the header is slimmed to theme + hard-reload (Ctrl+Shift+R equivalent). |
 
 The Summary leads with a COMMON overview (doctype, lang, content type, canonical,
 title/description with character counts, robots…) and a visual redirect trace with
@@ -165,7 +167,7 @@ npm run test:e2e     # loads the built extension in Chromium (Playwright) and dr
 npm test             # unit + audit + tech + build + e2e, in sequence
 ```
 
-Current coverage: **15** unit, **32** audit, **22** tech, **39** e2e checks.
+Current coverage: **15** unit, **32** audit, **22** tech, **43** e2e checks.
 
 > The e2e test launches the **full** Chromium build (`channel: 'chromium'`) —
 > Playwright's headless shell can't load extensions. Install it once with
@@ -215,6 +217,9 @@ grant).
   image thumbnails, Tools tab (Disable JavaScript, Outline headings).
 - **v1.2 — done:** Technology detection tab (Wappalyzer-style), copy buttons on more
   Summary fields, size-by-level heading outline.
+- **v1.3 — done:** bundled brand logos, more Tools (disable cookies/popups, outline
+  links, ruler), link follow/nofollow borders, wrapping Headings/Audit with copy,
+  slimmed header with a cache-bypass hard reload.
 - **Deferred (pre-publish):** optional host-permission flow — moving `<all_urls>`
   to `optional_host_permissions` with dynamic content-script registration and an
   `activeTab` fallback. It trades the frictionless multi-tab UX for a smaller

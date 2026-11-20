@@ -138,16 +138,29 @@ export function onLinkEvents(tabId: number, handler: (ev: LinkEvent) => void): (
   return () => chrome.runtime.onMessage.removeListener(listener);
 }
 
-// ── v1.1: page tools ────────────────────────────────────────────────────────
+// ── Page-tool toggles (sent to the content script) ──────────────────────────
 export async function setOutlineHeadings(tabId: number, on: boolean): Promise<void> {
-  try {
-    await chrome.tabs.sendMessage(tabId, { type: MSG.OUTLINE_HEADINGS, on });
-  } catch {
-    /* page may not accept messages */
-  }
+  await sendToTab(tabId, { type: MSG.OUTLINE_HEADINGS, on });
+}
+export async function setOutlineLinks(tabId: number, on: boolean): Promise<void> {
+  await sendToTab(tabId, { type: MSG.OUTLINE_LINKS, on });
+}
+export async function setRuler(tabId: number, on: boolean): Promise<void> {
+  await sendToTab(tabId, { type: MSG.RULER, on });
 }
 
-const jsPattern = (url: string): string | null => {
+// ── Content settings (JavaScript / cookies / popups) ────────────────────────
+export type BlockSetting = 'javascript' | 'cookies' | 'popups';
+
+function contentSetting(setting: BlockSetting) {
+  return setting === 'javascript'
+    ? chrome.contentSettings.javascript
+    : setting === 'cookies'
+      ? chrome.contentSettings.cookies
+      : chrome.contentSettings.popups;
+}
+
+const sitePattern = (url: string): string | null => {
   try {
     const u = new URL(url);
     return `${u.protocol}//${u.hostname}/*`;
@@ -156,27 +169,24 @@ const jsPattern = (url: string): string | null => {
   }
 };
 
-/** Whether JavaScript is currently blocked for the given page URL. */
-export function isJsBlocked(url: string): Promise<boolean> {
+/** Whether the setting is currently blocked for the given page URL. */
+export function isBlocked(setting: BlockSetting, url: string): Promise<boolean> {
   return new Promise((resolve) => {
     try {
-      chrome.contentSettings.javascript.get({ primaryUrl: url }, (res) => resolve(res?.setting === 'block'));
+      contentSetting(setting).get({ primaryUrl: url }, (res: { setting?: string }) => resolve(res?.setting === 'block'));
     } catch {
       resolve(false);
     }
   });
 }
 
-/** Block or allow JavaScript for the page's site. Returns the new blocked state. */
-export function setJsBlocked(url: string, blocked: boolean): Promise<boolean> {
-  const pattern = jsPattern(url);
+/** Block or allow the setting for the page's site. Returns the new blocked state. */
+export function setBlocked(setting: BlockSetting, url: string, blocked: boolean): Promise<boolean> {
+  const pattern = sitePattern(url);
   if (!pattern) return Promise.resolve(false);
   return new Promise((resolve) => {
     try {
-      chrome.contentSettings.javascript.set(
-        { primaryPattern: pattern, setting: blocked ? 'block' : 'allow' },
-        () => resolve(blocked),
-      );
+      contentSetting(setting).set({ primaryPattern: pattern, setting: blocked ? 'block' : 'allow' }, () => resolve(blocked));
     } catch {
       resolve(!blocked);
     }

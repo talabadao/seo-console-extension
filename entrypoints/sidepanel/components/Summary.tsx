@@ -32,7 +32,6 @@ function Common({ report }: { report: PageReport }) {
       <Field label="description" value={meta.description} count={meta.descriptionLength} over={descOver} copy />
       <Field label="robots" value={meta.robots} copy />
       <Field label="viewport" value={meta.viewport} />
-      <Field label="charset" value={meta.charset} />
       {meta.hreflang.length > 0 && <Field label="hreflang" value={`${meta.hreflang.length} alternate${meta.hreflang.length > 1 ? 's' : ''}`} />}
     </section>
   );
