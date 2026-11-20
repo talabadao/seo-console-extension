@@ -251,12 +251,7 @@ export function LinksPanel({ report, tabId }: { report: PageReport; tabId: numbe
 
 function LinkRow({ link, result }: { link: LinkInfo; result?: LinkResult }) {
   return (
-    <li
-      className={cn(
-        'flex items-center gap-2 rounded-lg bg-card px-2 py-1.5',
-        link.isNofollow ? 'border border-dashed border-warning' : 'border border-solid border-hairline',
-      )}
-    >
+    <li className="flex items-center gap-2 rounded-lg border border-hairline bg-card px-2 py-1.5">
       <Badge tone={link.isInternal ? 'accent' : 'neutral'}>{link.isInternal ? 'int' : 'ext'}</Badge>
       <div className="min-w-0 flex-1">
         <div className="truncate text-[12px] text-fg">

@@ -8,7 +8,7 @@ export default defineConfig({
     name: 'SEO Console',
     description:
       'On-page SEO inspector: status codes, redirects, meta tags, headings, images, links, indexability, Core Web Vitals and technology detection.',
-    version: '1.3.0',
+    version: '1.3.1',
     permissions: ['activeTab', 'storage', 'sidePanel', 'webRequest', 'tabs', 'contentSettings'],
     // webRequest needs host access to read status codes / response headers and for
     // the background worker to check cross-origin links. For a later release this can
